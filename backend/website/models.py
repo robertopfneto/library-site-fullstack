@@ -2,7 +2,7 @@ from django.db import models
 
 #User: nome, senha, pontos, trofeus
 #Trofeu: nome, desc
-#Livro: titulo, autor, paginas
+#Livro: titulo, autor, paginas, imagem
 #Leitura: Usuario, Livro, data
 
 class User(models.Model):
