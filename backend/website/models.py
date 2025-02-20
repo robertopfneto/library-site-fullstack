@@ -19,6 +19,7 @@ class Livro(models.Model):
     titulo = models.CharField(max_length=50)
     autor = models.CharField(max_length=50)
     paginas = models.IntegerField()
+    imagem = models.ImageField(upload_to='imagens/', null=True, blank=True)
 
 class Leitura(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)

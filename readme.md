@@ -13,6 +13,7 @@ conda activate <environment_name>
 pip install django-cors-headers 
 pip install djangorestframework
 pip install django
+pip install Pillow 
 
 npm install -g @angular/cli
 ```
