@@ -16,6 +16,7 @@ urlpatterns = [
     # Rotas para Livro
     path('livro/', livroAPI, name='livro-list-create'),
     path('livro/<int:id>/', livroAPI, name='livro-detail'),
+    path('livro/imagem/<int:id>/', livroAPI, name='livro-imagem'), #upload de imagem
 
     # Rotas para Trofeu
     path('trofeu/', trofeuAPI, name='trofeu-list-create'),
