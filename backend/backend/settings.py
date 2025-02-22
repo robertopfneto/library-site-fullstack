@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     'website',
 ]
@@ -51,6 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -104,6 +106,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -128,3 +132,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+LOGIN_REDIRECT_URL = 'home'  # Redireciona após login bem-sucedido
+LOGOUT_REDIRECT_URL = 'login'  # Redireciona após logout
+LOGIN_URL = 'login'  # URL para redirecionar usuários não autenticados
+
+AUTHENTICATION_BACKENDS = ['website.authenticate.CustomAuthBackend']
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_NAME = 'my_session'
+SESSION_COOKIE_AGE = 86400  # 1 dia de sessão ativa
+SESSION_SAVE_EVERY_REQUEST = True  # Garante que a sessão seja salva a cada requisição
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Encerra a sessão ao fechar o navegador

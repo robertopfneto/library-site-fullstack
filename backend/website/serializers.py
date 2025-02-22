@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Leitura, Livro, Trofeu, User
+from django.contrib.auth import authenticate
 
 class TrofeuSerializer(serializers.ModelSerializer):
     class Meta:
@@ -24,3 +25,14 @@ class LeituraSerializer(serializers.ModelSerializer):
     class Meta:
         model = Leitura
         fields = '__all__'
+
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        user = authenticate(**data)
+        if user and user.is_active:
+            return user
+        raise serializers.ValidationError("Credenciais inválidas")

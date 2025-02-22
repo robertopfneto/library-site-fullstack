@@ -1,9 +1,6 @@
-from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from django.shortcuts import render
-from rest_framework.parsers import JSONParser
 
 from .models import Leitura, Livro, Trofeu, User
 from .serializers import LeituraSerializer, LivroSerializer, TrofeuSerializer, UserSerializer
@@ -19,12 +16,15 @@ def userAPI(request, id=0):
         users = User.objects.all()
         user_serializer = UserSerializer(users, many=True)
         return Response(user_serializer.data)
+    
     elif request.method == 'POST':
         user_serializer = UserSerializer(data=request.data)
         if user_serializer.is_valid():
             user_serializer.save()
             return Response("Cadastro realizado com sucesso", status=status.HTTP_201_CREATED)
         return Response("Falha ao adicionar usuário", status=status.HTTP_400_BAD_REQUEST)
+    
+
     elif request.method == 'PUT':
         try:
             user = User.objects.get(id=id)
@@ -42,6 +42,9 @@ def userAPI(request, id=0):
             return Response("Usuário não encontrado", status=status.HTTP_404_NOT_FOUND)
         user.delete()
         return Response("Usuário deletado com sucesso")
+    
+
+
     
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def livroAPI(request, id=0):
@@ -72,6 +75,10 @@ def livroAPI(request, id=0):
             return Response("Livro não encontrado", status=status.HTTP_404_NOT_FOUND)
         livro.delete()
         return Response("Livro deletado com sucesso")
+    
+
+
+
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def trofeuAPI(request, id=0):
@@ -102,6 +109,11 @@ def trofeuAPI(request, id=0):
             return Response("Troféu não encontrado", status=status.HTTP_404_NOT_FOUND)
         trofeu.delete()
         return Response("Troféu deletado com sucesso")
+    
+
+
+
+    
 
 @api_view(['GET', 'POST', 'PUT', 'DELETE'])
 def leituraAPI(request, id=0):

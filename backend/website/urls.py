@@ -1,17 +1,28 @@
 from django.urls import include, path
 from rest_framework import routers
-from .views import userAPI, livroAPI, leituraAPI, trofeuAPI
+
+from .view_pages import home_page, LoginUser as login_user
+from .view_crud import userAPI, livroAPI, leituraAPI, trofeuAPI
+
 
 
 router = routers.DefaultRouter()
 
 urlpatterns = [
-    path('', include(router.urls)),
+    #path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     
+    path('home/', home_page, name='home'),
+
     # Rotas para User
     path('user/', userAPI, name='user-list-create'),  # GET all, POST create
     path('user/<int:id>/', userAPI, name='user-detail'),  # GET, PUT, DELETE
+
+
+    #Web
+    path('', login_user.as_view(), name='login'),  # POST login
+    path('user/logout/', userAPI, name='logout'),  # POST logout
+
 
     # Rotas para Livro
     path('livro/', livroAPI, name='livro-list-create'),
