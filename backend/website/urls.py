@@ -15,8 +15,8 @@ urlpatterns = [
     path('home/', home_page, name='home'),
 
     # Rotas para User
-    path('user/', userAPI, name='user-list-create'),  # GET all, POST create
-    path('user/<int:id>/', userAPI, name='user-detail'),  # GET, PUT, DELETE
+    path('user/', userAPI, name='user'),  # GET all, POST create
+    path('user/<int:id>/', userAPI, name='user-de tail'),  # GET, PUT, DELETE
 
 
     #Web

@@ -1,9 +1,8 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.views import View
-from django.contrib.auth import get_user_model, authenticate, login
+from django.contrib.auth import  authenticate, login
 
 
 from django.utils.decorators import method_decorator
@@ -12,7 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 def home_page(request):
     print(f'Usuário autenticado: {request.user}') 
-    return render(request, '../templates/home_page.html')
+    return render(request, '../templates/home_page.html', {'user': request.user})
 
 @method_decorator(csrf_exempt, name='dispatch')
 class LoginUser(View):
