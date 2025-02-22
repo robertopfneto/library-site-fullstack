@@ -95,9 +95,9 @@
             <a class="navbar-brand" href="#">EU JA LI!</a>
             <div class="profile-section">
                 <div class="dropdown">
-                    <button class="btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        Meu Perfil
-                    </button>
+                    <a class="btn btn-light" href="{% url 'perfil_usuario'%}">
+                        <i class="bi bi-person-circle"></i> Meu Perfil
+                    </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="#">Configurações</a></li>
                         <li><a class="dropdown-item" href="#">Sair</a></li>
@@ -123,7 +123,9 @@
                     <div class="icon-container">
                         <i class="bi bi-book menu-icon"></i>
                     </div>
-                    <h3>Lista de Livros Disponíveis</h3>
+                    <a href="{% url 'book-list' %}" class="btn btn-primary btn-lg mt-3">
+                        <i class="bi bi-book"></i> Lista de Livros Disponíveis
+                    </a>
                 </div>
             </div>
             

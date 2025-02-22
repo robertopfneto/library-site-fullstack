@@ -1,7 +1,8 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .view_pages import home_page, LoginUser as login_user
+from .view_pages import home_page, LoginUser as login_user, perfil_usuario, ranking
+from.view_pages import lista_livros, detalhe_livro
 from .view_crud import userAPI, livroAPI, leituraAPI, trofeuAPI
 
 
@@ -13,10 +14,15 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     
     path('home/', home_page, name='home'),
+    path('livros/', lista_livros, name="book-list"),
+    path('livros/<int:id>/', detalhe_livro, name="book-detail"),
+    path('perfil/', perfil_usuario, name='perfil_usuario'),
+    path('ranking/', ranking, name='ranking'),
+
 
     # Rotas para User
     path('user/', userAPI, name='user'),  # GET all, POST create
-    path('user/<int:id>/', userAPI, name='user-de tail'),  # GET, PUT, DELETE
+    path('user/<int:id>/', userAPI, name='user-detail'),  # GET, PUT, DELETE
 
 
     #Web
