@@ -1,11 +1,22 @@
 from rest_framework import serializers
-from .models import Leitura, Livro, Trofeu, User
+from .models import Categoria, Leitura, Livro, Trofeu, User
 from django.contrib.auth import authenticate
 
+
+class CategoriaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Categoria
+        fields = '__all__'
+
 class TrofeuSerializer(serializers.ModelSerializer):
+    categorias = serializers.CharField(source='categoria.nome', read_only=True)
+
     class Meta:
         model = Trofeu
         fields = '__all__'
+        extra_kwargs = {
+            'categoria': {'write_only': True}
+        }
 
 class UserSerializer(serializers.ModelSerializer):
     trofeus = TrofeuSerializer(many=True, read_only=True) 
@@ -16,6 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class LivroSerializer(serializers.ModelSerializer):
+    categorias = CategoriaSerializer(many=True, read_only=True)
     class Meta:
         model = Livro
         fields = '__all__'
