@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
+{% load custom_filters %}
 
 <html lang="pt-br">
 <head>
@@ -102,7 +103,7 @@
                             {{ usuario.total_lidos|default:"0" }}
                         </td>
                         <td class="text-center fs-5">
-                            {{ usuario.total_conquistas|default:"0" }}
+                            {{ usuario.total_conquistas|default:"0" }} 
                         </td>
                         <td class="text-center">
                             <a href="{% url 'perfil_usuario_detail' usuario.id %}" 

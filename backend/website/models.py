@@ -46,7 +46,11 @@ class TrofeuConfig(models.Model):
         return f"Config: {self.categoria.nome}"
 
 class Conquista(models.Model):
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(
+        User, 
+        on_delete=models.CASCADE,
+        related_name='conquistas'  # ← Garanta que está assim
+    )
     trofeu_config = models.ForeignKey(TrofeuConfig, on_delete=models.CASCADE)  
     nivel = models.IntegerField()
     data_conquista = models.DateTimeField(auto_now_add=True)
