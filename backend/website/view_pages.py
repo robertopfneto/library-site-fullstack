@@ -1,3 +1,4 @@
+from math import ceil
 from django.shortcuts import get_object_or_404, render, redirect
 from django.contrib.auth import login
 from django.contrib import messages
@@ -103,24 +104,26 @@ def calcular_pontos(livro):
 def conquistas(request, usuario, categoria, pontos):
     try:
         config = TrofeuConfig.objects.get(categoria=categoria)
+        print(f"Processando conquistas para {usuario} na categoria {categoria}")  # Log
         total_lidos = Leitura.objects.filter(
             usuario=usuario,
             livro__categoria=categoria,
             concluido=True
         ).count()
 
-        # Calcular quantos níveis foram alcançados (cada 5 livros)
-        niveis_conquistados = total_lidos // config.livros_necessarios
+        # Calcular níveis com arredondamento para cima
+        niveis_conquistados = ceil(total_lidos / config.livros_necessarios)
         
-        # Verificar conquistas já registradas
-        conquistas_existentes = Conquista.objects.filter(
+        # Pegar último nível conquistado
+        ultima_conquista = Conquista.objects.filter(
             usuario=usuario,
             trofeu_config=config
-        ).count()
+        ).order_by('-nivel').first()
+        nivel_existente = ultima_conquista.nivel if ultima_conquista else 0
 
-        # Atribuir novos troféus se necessário
-        if niveis_conquistados > conquistas_existentes:
-            for nivel in range(conquistas_existentes + 1, niveis_conquistados + 1):
+        # Atribuir novos níveis se houver diferença
+        if niveis_conquistados > nivel_existente:
+            for nivel in range(nivel_existente + 1, niveis_conquistados + 1):
                 pontos_recompensa = config.pontos_recompensa * nivel
                 usuario.pontos += pontos_recompensa
                 Conquista.objects.create(
@@ -135,7 +138,7 @@ def conquistas(request, usuario, categoria, pontos):
                 )
             usuario.save()
     except TrofeuConfig.DoesNotExist:
-        pass
+        print(f"ERRO: TrofeuConfig não existe para a categoria {categoria}")
 
 def get_livro_context(livro, leitura, user):
     conquistas = Conquista.objects.filter(

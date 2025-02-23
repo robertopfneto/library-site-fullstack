@@ -1,9 +1,9 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-
-from .models import Categoria, Leitura, Livro, User
-from .serializers import CategoriaSerializer, LeituraSerializer, LivroSerializer, UserSerializer
+from rest_framework.decorators import api_view
+from .models import Categoria, Leitura, Livro, TrofeuConfig, User, Conquista
+from .serializers import CategoriaSerializer, LeituraSerializer, LivroSerializer, TrofeuConfigSerializer, UserSerializer, ConquistaSerializer   
 
 #User: nome, senha, pontos, trofeus
 #Trofeu: nome, desc
@@ -176,3 +176,126 @@ def leituraAPI(request, id=0):
             return Response("Leitura não encontrada", status=status.HTTP_404_NOT_FOUND)
         leitura.delete()
         return Response("Leitura deletada com sucesso")
+
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
+def conquistaAPI(request, id=0):
+    try:
+        if request.method == 'GET':
+            if id > 0:
+                conquista = Conquista.objects.get(id=id)
+                serializer = ConquistaSerializer(conquista)
+                return Response(serializer.data)
+            else:
+                conquistas = Conquista.objects.all().order_by('-data_conquista')
+                serializer = ConquistaSerializer(conquistas, many=True)
+                return Response({
+                    'count': conquistas.count(),
+                    'results': serializer.data
+                })
+        
+        elif request.method == 'POST':
+            serializer = ConquistaSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    'status': 'success',
+                    'data': serializer.data
+                }, status=status.HTTP_201_CREATED)
+            return Response({
+                'status': 'error',
+                'errors': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        elif request.method == 'PUT':
+            conquista = Conquista.objects.get(id=id)
+            serializer = ConquistaSerializer(conquista, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    'status': 'success',
+                    'data': serializer.data
+                })
+            return Response({
+                'status': 'error',
+                'errors': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        elif request.method == 'DELETE':
+            conquista = Conquista.objects.get(id=id)
+            conquista.delete()
+            return Response({
+                'status': 'success',
+                'message': 'Conquista excluída'
+            }, status=status.HTTP_204_NO_CONTENT)
+
+    except Conquista.DoesNotExist:
+        return Response({
+            'status': 'error',
+            'message': 'Conquista não encontrada'
+        }, status=status.HTTP_404_NOT_FOUND)
+    
+    except Exception as e:
+        return Response({
+            'status': 'error',
+            'message': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
+def trofeuConfigAPI(request, id=0):
+    try:
+        if request.method == 'GET':
+            if id > 0:
+                config = TrofeuConfig.objects.get(id=id)
+                serializer = TrofeuConfigSerializer(config)
+                return Response(serializer.data)
+            else:
+                configs = TrofeuConfig.objects.all().select_related('categoria')
+                serializer = TrofeuConfigSerializer(configs, many=True)
+                return Response(serializer.data)
+        
+        elif request.method == 'POST':
+            serializer = TrofeuConfigSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    'status': 'success',
+                    'data': serializer.data
+                }, status=status.HTTP_201_CREATED)
+            return Response({
+                'status': 'error',
+                'errors': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        elif request.method == 'PUT':
+            config = TrofeuConfig.objects.get(id=id)
+            serializer = TrofeuConfigSerializer(config, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    'status': 'success',
+                    'data': serializer.data
+                })
+            return Response({
+                'status': 'error',
+                'errors': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        elif request.method == 'DELETE':
+            config = TrofeuConfig.objects.get(id=id)
+            config.delete()
+            return Response({
+                'status': 'success',
+                'message': 'Configuração de troféu excluída'
+            }, status=status.HTTP_204_NO_CONTENT)
+
+    except TrofeuConfig.DoesNotExist:
+        return Response({
+            'status': 'error',
+            'message': 'Configuração não encontrada'
+        }, status=status.HTTP_404_NOT_FOUND)
+    
+    except Exception as e:
+        return Response({
+            'status': 'error',
+            'message': str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

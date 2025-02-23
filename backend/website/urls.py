@@ -3,7 +3,7 @@ from rest_framework import routers
 
 from .view_pages import home_page, LoginUser as login_user, perfil_usuario, ranking
 from.view_pages import lista_livros, detalhe_livro
-from .view_crud import categoriaAPI, userAPI, livroAPI, leituraAPI
+from .view_crud import categoriaAPI, conquistaAPI, trofeuConfigAPI, userAPI, livroAPI, leituraAPI
 
 
 
@@ -45,4 +45,11 @@ urlpatterns = [
     path('categoria/', categoriaAPI, name='categoria-list-create'),
     path('categoria/<int:id>/', categoriaAPI, name='categoria-detail'),
 
+    #Rotas para Conquista
+    path('conquista/', conquistaAPI, name='conquista-list-create'),
+    path('conquista/<int:id>/', conquistaAPI, name='conquista-detail'),
+
+    #Rotas para TrofeuConfig
+    path('trofeuconfig/', trofeuConfigAPI, name='trofeuconfig-list-create'),
+    path('trofeuconfig/<int:id>/', trofeuConfigAPI, name='trofeuconfig-detail'),
 ]

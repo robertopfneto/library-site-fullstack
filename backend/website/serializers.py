@@ -16,7 +16,9 @@ class ConquistaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Conquista
         fields = '__all__'
-        depth = 1  
+        extra_kwargs = {
+            'trofeu_config': {'required': True}  
+        }
 
 class UserSerializer(serializers.ModelSerializer):
     conquistas = ConquistaSerializer(many=True, read_only=True)
