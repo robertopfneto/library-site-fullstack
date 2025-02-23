@@ -46,22 +46,13 @@ class TrofeuConfig(models.Model):
         return f"Config: {self.categoria.nome}"
 
 class Conquista(models.Model):
-    usuario = models.ForeignKey(
-        User, 
-        on_delete=models.CASCADE,
-        related_name='conquistas'
-    )
-    trofeu_config = models.ForeignKey(
-        TrofeuConfig,
-        on_delete=models.CASCADE
-    )
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='conquistas')
+    trofeu_config = models.ForeignKey(TrofeuConfig, on_delete=models.CASCADE)
     data_conquista = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        unique_together = ['usuario', 'trofeu_config']
+    nivel = models.PositiveIntegerField(default=1)  # Novo campo para rastrear o nível
 
     def __str__(self):
-        return f"{self.usuario} - {self.trofeu_config.categoria.nome}"
+        return f"{self.usuario} - {self.trofeu_config.categoria.nome} (Nível {self.nivel})"
 
 class Livro(models.Model):
     titulo = models.CharField(max_length=200)
@@ -84,7 +75,7 @@ class Leitura(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
     livro = models.ForeignKey(Livro, on_delete=models.CASCADE)
     concluido = models.BooleanField(default=False)
-    data_leitura = models.DateTimeField(auto_now_add=True)
+    data_leitura = models.DateTimeField(auto_now_add=True)  # Campo adicionado
 
     class Meta:
         unique_together = ['usuario', 'livro']

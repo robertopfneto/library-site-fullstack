@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from .models import Categoria, Leitura, Livro, User
-from .serializers import CategoriaSerializer, LeituraSerializer, LivroSerializer, TrofeuSerializer, UserSerializer
+from .serializers import CategoriaSerializer, LeituraSerializer, LivroSerializer, UserSerializer
 
 #User: nome, senha, pontos, trofeus
 #Trofeu: nome, desc

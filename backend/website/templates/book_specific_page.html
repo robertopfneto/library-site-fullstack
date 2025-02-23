@@ -91,52 +91,49 @@
         {% endfor %}
     </div>
 
-    class="container py-5">
+    <!-- Conteúdo Principal -->
+    <div class="container py-5">
         <div class="detail-card">
             <div class="row g-4">
-                <!-- Seção da Capa e Informações (mantenha igual) -->
-                
-                <div class="col-lg-8">
-                    <!-- Informações do Livro (mantenha igual) -->
-
-                    <!-- Seção de Troféus -->
-                    {% if conquistas %}
-                    <div class="mt-5">
-                        <h3 class="mb-4">
-                            <i class="bi bi-trophy"></i> Troféus Conquistados nesta Categoria
-                        </h3>
-                        
-                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                            {% for conquista in conquistas %}
-                            <div class="col">
-                                <div class="card trofeu-card h-100 position-relative">
-                                    <div class="card-body text-center">
-                                        <span class="nivel-badge">Nível {{ forloop.counter }}</span>
-                                        <div class="mb-3">
-                                            <i class="bi bi-trophy-fill trofeu-icon"></i>
-                                        </div>
-                                        <h5 class="card-title">{{ conquista.trofeu_config.categoria.nome }}</h5>
-                                        <p class="text-muted small">
-                                            <i class="bi bi-calendar"></i> 
-                                            {{ conquista.data_conquista|date:"d/m/Y" }}
-                                        </p>
-                                        <div class="badge bg-success">
-                                            +{{ conquista.trofeu_config.pontos_recompensa }} pontos
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
+                <div class="col-lg-4 text-center">
+                    {% if livro.imagem %}
+                    <img src="{{ livro.imagem.url }}" 
+                         class="book-detail-cover img-fluid"
+                         alt="Capa de {{ livro.titulo }}">
                     {% else %}
-                    <div class="alert alert-info mt-5">
-                        <i class="bi bi-info-circle"></i> 
-                        Leia mais livros desta categoria para desbloquear troféus!
+                    <div class="bg-secondary text-white p-5 rounded">
+                        <i class="bi bi-image" style="font-size: 3rem;"></i>
+                        <p class="mt-2">Sem capa disponível</p>
                     </div>
                     {% endif %}
+                    
+                    <div class="mt-4">
+                        <span class="badge bg-primary info-badge">
+                            <i class="bi bi-file-text"></i> {{ livro.paginas }} páginas
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="col-lg-8">
+                    <h1 class="display-4 mb-4">{{ livro.titulo }}</h1>
+                    <h4 class="text-muted mb-4">{{ livro.categoria }}</h4>
+                    <h4 class="text-muted mb-4">por {{ livro.autor }}</h4>
+                    
+                    <div class="mb-5">
+                        <h3 class="mb-3"><i class="bi bi-card-text"></i> Sinopse</h3>
+                        <p class="lead">{{ livro.sinopse|default:"Sinopse não disponível" }}</p>
+                    </div>
+                    
+                        <div class="d-grid gap-3 d-md-flex">
+                            <form method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="bi bi-bookmark-check"></i> 
+                                    {% if leitura.concluido %}Desmarcar{% else %}Marcar{% endif %} como Lido
+                                </button>
+                            </form>   
+                        </div>
 
-                    <!-- Botão de Marcar como Lido (mantenha igual) -->
                 </div>
             </div>
         </div>

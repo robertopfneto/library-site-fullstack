@@ -9,7 +9,7 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <style>
-        body {
+         body {
             background-color: #f8f9fa;
             font-family: 'Arial', sans-serif;
             min-height: 100vh;
@@ -47,6 +47,7 @@
             flex-direction: column;
             justify-content: center;
             cursor: pointer;
+            position: relative;
         }
         
         .menu-card:hover {
@@ -85,6 +86,16 @@
             bottom: 0;
             width: 100%;
         }
+        
+        .stretched-link::after {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 1;
+            content: "";
+        }
     </style>
 </head>
 <body>
@@ -98,10 +109,6 @@
                     <a class="btn btn-light" href="{% url 'perfil_usuario'%}">
                         <i class="bi bi-person-circle"></i> Meu Perfil
                     </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Configurações</a></li>
-                        <li><a class="dropdown-item" href="#">Sair</a></li>
-                    </ul>
                 </div>
             </div>
         </div>
@@ -116,36 +123,26 @@
         </div>
 
         <!-- Menu Principal -->
-        <div class="row main-menu">
+        <div class="row main-menu justify-content-center">
             <!-- Lista de Livros -->
-            <div class="col-md-6 col-lg-4 mb-4">
+            <div class="col-md-8 col-lg-5 mb-4">
                 <div class="card menu-card text-center p-4">
+                    <a href="{% url 'book-list' %}" class="stretched-link"></a>
                     <div class="icon-container">
                         <i class="bi bi-book menu-icon"></i>
                     </div>
-                    <a href="{% url 'book-list' %}" class="btn btn-primary btn-lg mt-3">
-                        <i class="bi bi-book"></i> Lista de Livros Disponíveis
-                    </a>
+                    <h3 class="text-dark">Lista de Livros</h3>
                 </div>
             </div>
             
             <!-- Ranking -->
-            <div class="col-md-6 col-lg-4 mb-4">
+            <div class="col-md-8 col-lg-5 mb-4">
                 <div class="card menu-card text-center p-4">
+                    <a href="{% url 'ranking' %}" class="stretched-link"></a>
                     <div class="icon-container">
                         <i class="bi bi-trophy menu-icon"></i>
                     </div>
-                    <h3>Ranking de Pontuação</h3>
-                </div>
-            </div>
-            
-            <!-- Meus Livros -->
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card menu-card text-center p-4">
-                    <div class="icon-container">
-                        <i class="bi bi-bookshelf menu-icon"></i>
-                    </div>
-                    <h3>Meus Livros</h3>
+                    <h3 class="text-dark">Ranking de Pontuação</h3>
                 </div>
             </div>
         </div>

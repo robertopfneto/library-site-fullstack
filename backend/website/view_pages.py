@@ -17,13 +17,11 @@ from django.contrib.auth import login
 from django.contrib import messages
 from django.views import View
 from django.contrib.auth import authenticate
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.db import models
-from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
 
-from .models import Categoria, Conquista, Leitura, Livro, TrofeuConfig, User
+
+from .models import Conquista, Leitura, Livro, TrofeuConfig, User
 from .serializers import LivroSerializer
 
 def home_page(request):
@@ -50,10 +48,13 @@ def lista_livros(request):
     livros = Livro.objects.select_related('categoria').all()
     return render(request, 'book_list_page.html', {'livros': livros})
 
-def detalhe_livro(request, livro_id):
-    livro = get_object_or_404(Livro.objects.select_related('categoria'), id=livro_id)
-    leitura, created = Leitura.objects.get_or_create(usuario=request.user, livro=livro)
-
+def detalhe_livro(request, id):
+    livro = get_object_or_404(Livro.objects.select_related('categoria'), id=id)
+    leitura, created = Leitura.objects.get_or_create(
+        usuario=request.user,
+        livro=livro,
+        defaults={'concluido': False}  # Garante valores padrão
+    )
     if request.method == 'POST':
         return leitura_status(request, livro, leitura)
 
@@ -97,7 +98,9 @@ def desmarcar_como_lido(request, livro):
 def calcular_pontos(livro):
     return 1 + (livro.paginas // 100)
 
-def conquistas(request, usuario, categoria, pontos):  # Adicione request
+
+# Seta trofeu para o usuário
+def conquistas(request, usuario, categoria, pontos):
     try:
         config = TrofeuConfig.objects.get(categoria=categoria)
         total_lidos = Leitura.objects.filter(
@@ -106,22 +109,31 @@ def conquistas(request, usuario, categoria, pontos):  # Adicione request
             concluido=True
         ).count()
 
-        nivel_anterior = total_lidos // config.livros_necessarios
-        novo_nivel = (total_lidos + 1) // config.livros_necessarios
+        # Calcular quantos níveis foram alcançados (cada 5 livros)
+        niveis_conquistados = total_lidos // config.livros_necessarios
+        
+        # Verificar conquistas já registradas
+        conquistas_existentes = Conquista.objects.filter(
+            usuario=usuario,
+            trofeu_config=config
+        ).count()
 
-        if novo_nivel > nivel_anterior:
-            pontos_recompensa = config.pontos_recompensa * novo_nivel
-            usuario.pontos += pontos_recompensa
+        # Atribuir novos troféus se necessário
+        if niveis_conquistados > conquistas_existentes:
+            for nivel in range(conquistas_existentes + 1, niveis_conquistados + 1):
+                pontos_recompensa = config.pontos_recompensa * nivel
+                usuario.pontos += pontos_recompensa
+                Conquista.objects.create(
+                    usuario=usuario,
+                    trofeu_config=config,
+                    nivel=nivel
+                )
+                messages.success(
+                    request,
+                    f"🏆 Troféu conquistado: Leitor de {categoria.nome} (Nível {nivel})! +{pontos_recompensa} pontos",
+                    extra_tags='book_detail'
+                )
             usuario.save()
-            
-            Conquista.objects.create(
-                usuario=usuario,
-                trofeu_config=config
-            )
-            messages.success(request,  # Agora request está definido
-                f"🏆 Troféu conquistado! +{pontos_recompensa} pontos",
-                extra_tags='book_detail'
-            )
     except TrofeuConfig.DoesNotExist:
         pass
 
@@ -144,9 +156,16 @@ def get_livro_context(livro, leitura, user):
         }
     }
 
-def perfil_usuario(request):
-    usuario = request.user
-    conquistas = Conquista.objects.filter(usuario=usuario).select_related('trofeu_config')
+def perfil_usuario(request, id=None):
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    if id is None:
+        usuario = request.user
+    else:
+        usuario = get_object_or_404(User, id=id)
+    
+    conquistas = Conquista.objects.filter(usuario=usuario).select_related('trofeu_config__categoria')
     
     posicao = User.objects.filter(pontos__gt=usuario.pontos).count() + 1
     
@@ -160,7 +179,8 @@ def perfil_usuario(request):
 
 def ranking(request):
     usuarios = User.objects.annotate(
-        total_lidos=Count('leitura', filter=models.Q(leitura__concluido=True))
+        total_lidos=Count('leitura', filter=models.Q(leitura__concluido=True)),
+        total_conquistas=Count('conquistas')  # Mudar para o related_name correto
     ).order_by('-pontos')
     
     return render(request, '../templates/ranking.html', {

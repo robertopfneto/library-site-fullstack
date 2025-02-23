@@ -1,43 +1,46 @@
 from rest_framework import serializers
-from .models import Categoria, Leitura, Livro, Trofeu, User
+from .models import Categoria, Conquista, Leitura, Livro, TrofeuConfig, User
 from django.contrib.auth import authenticate
-
 
 class CategoriaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Categoria
         fields = '__all__'
 
-class TrofeuSerializer(serializers.ModelSerializer):
-    categorias = serializers.CharField(source='categoria.nome', read_only=True)
-
+class TrofeuConfigSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Trofeu
+        model = TrofeuConfig
         fields = '__all__'
-        extra_kwargs = {
-            'categoria': {'write_only': True}
-        }
+
+class ConquistaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Conquista
+        fields = '__all__'
+        depth = 1  
 
 class UserSerializer(serializers.ModelSerializer):
-    trofeus = TrofeuSerializer(many=True, read_only=True) 
+    conquistas = ConquistaSerializer(many=True, read_only=True)
 
     class Meta:
         model = User
         fields = '__all__'
-
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
 
 class LivroSerializer(serializers.ModelSerializer):
-    categorias = CategoriaSerializer(many=True, read_only=True)
     class Meta:
         model = Livro
         fields = '__all__'
+        extra_kwargs = {
+            'categoria': {'required': False}
+        }
 
 class LeituraSerializer(serializers.ModelSerializer):
-    livros = LivroSerializer(many=True, read_only=True)  
     class Meta:
         model = Leitura
         fields = '__all__'
-
+        read_only_fields = ('data_leitura',)
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
